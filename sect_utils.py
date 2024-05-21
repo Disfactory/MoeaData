@@ -202,11 +202,11 @@ class LandAddress(Address):
         return "".join("".join(getattr(self, _land_types[d].name)) for d in digits)
 
     @staticmethod
-    def get_digit(unit):
+    def get_digit(unit) -> int:
         for land_type in _land_types:
             if unit in land_type.units:
                 return land_type.digit
-        return None
+        return 0
 
     @staticmethod
     def singularize_address(tokens):
@@ -257,134 +257,11 @@ class LandAddress(Address):
         return get_first_match(all_matches)
 
 
-# address = "朴子市母寮段竹村小段581地號"
-address = "大里區大里段1064地號"
-tokens = Address.tokenize(address, normalize=False)
-
-print(tokens)
-
-land_address = LandAddress.singularize_address(tokens)
-print(land_address)
-
-# class Directory(object):
+# # address = "朴子市母寮段竹村小段581地號"
+# address = "大里區大里段1064地號"
+# tokens = Address.tokenize(address, normalize=False)
 #
-#     def __init__(self, csv_path):
-#         self.version = Directory.load_csv(csv_path)
+# print(tokens)
 #
-#     @staticmethod
-#     def load_csv(csv_path):
-#         with open(csv_path, "r") as file:
-#             return json.load(file, object_hook=hook)
-#
-#     def load_db(self, db_path, create_date=None):
-#         try:
-#             config.setup_session(db_path)
-#             with config.session_scope() as session:
-#                 if not create_date:
-#                     latest_version = Version.get_latest_version(session)
-#                     create_date = latest_version.date
-#                 self.version = Version.get_version(session, create_date)
-#         except Exception as e:
-#             logging.exception(e)
-#
-#     def find(self, addr_str, take=1):
-#
-#         # state the costs of each type of error for fuzzy_counts sorting
-#         costs = (3, 1, 1)
-#
-#         def sum_cost(fuzzy_counts):
-#             return sum(map(lambda x_y: x_y[0] * x_y[1], zip(fuzzy_counts, costs)))
-#
-#         land_addr = LandAddress(addr_str, normalize=True)
-#
-#         county = land_addr.pick_to_flat(0)
-#         town = land_addr.pick_to_flat(1)
-#         section = land_addr.pick_to_flat(3)
-#         small_section = land_addr.pick_to_flat(4)
-#         number = land_addr.number
-#
-#         if county:
-#             counties = self.version.find(county)
-#         else:
-#             counties = self.version.counties
-#
-#         towns = []
-#         if town:
-#             for c in counties:
-#                 towns += c.find(town)
-#         else:
-#             for c in counties:
-#                 towns += c.towns
-#
-#         sections = []
-#         if section:
-#             for t in towns:
-#                 for s in t.sections:
-#                     s.count_section_fuzzy(section)
-#                     if small_section:
-#                         s.count_small_section_fuzzy(small_section)
-#                     sections.append(s)
-#
-#             sections.sort(key=lambda x: sum_cost(x.section_fc))
-#
-#             if small_section:
-#                 sections.sort(key=lambda x: sum_cost(x.small_section_fc))
-#
-#         elif small_section:
-#             for t in towns:
-#                 for s in t.sections:
-#                     s.count_small_section_fuzzy(small_section)
-#                     sections.append(s)
-#
-#             sections.sort(key=lambda x: sum_cost(x.small_section_fc))
-#
-#         digit = ""
-#         if number[0]:
-#             digits = number[0].split("-")
-#             if len(digits) == 1:
-#                 digits.append("")
-#             digit = digits[0].zfill(4) + digits[1].zfill(4)
-#
-#         return [
-#             (
-#                 s.code6,
-#                 s.code7,
-#                 s.code6 + digit if digit else "",
-#                 s.code7 + digit if digit else "",
-#             )
-#             for s in sections[:take]
-#         ]
-#
-#     def find_complex(self, addr_str, take=1):
-#
-#         def singularize_number(addr_str):
-#
-#             ins = LandAddress(addr_str, normalize=False)
-#
-#             if ins.number:
-#                 value = re.sub(
-#                     r"[.、；，+及和]|以及", LandAddress.SEP_SIGN, ins.number[0]
-#                 )
-#                 ns = [n for n in re.split(LandAddress.SEP_SIGN, value) if n]
-#
-#                 # clear other unit's value
-#                 front_str = ins.pick_to_flat(0, 1, 2, 3, 4)
-#                 front_str = "".join(e for e in front_str if e.isalnum())
-#                 return [front_str + n + ins.number[1] for n in ns]
-#
-#             return []
-#
-#         # separate addresses
-#         tokens = Address.tokenize(addr_str, normalize=False)
-#
-#         addresses = LandAddress.singularize_address(tokens)
-#
-#         parsed_addresses = []
-#
-#         for address in addresses:
-#             parsed_addresses += singularize_number(address)
-#
-#         return [
-#             (Address.normalize(address), self.find(address, take=take))
-#             for address in parsed_addresses
-#         ]
+# land_address = LandAddress.singularize_address(tokens)
+# print(land_address)

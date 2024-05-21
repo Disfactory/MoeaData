@@ -38,6 +38,7 @@ class LandUseViolation:
     city: str
     sectname: str
     sectcode: str
+    land_numbers: list[str]
     usage_zone: str
     use: str
     status: list[str]
@@ -51,6 +52,7 @@ class LandUseViolation:
         city: str,
         sectname: str,
         sectcode: str,
+        land_numbers: list[str],
         usage_zone: str,
         use: str,
         status: list[str],
@@ -62,6 +64,7 @@ class LandUseViolation:
         self.city = city
         self.sectname = sectname
         self.sectcode = sectcode
+        self.land_numbers = land_numbers
         self.usage_zone = usage_zone
         self.use = use
         self.status = status
@@ -73,15 +76,16 @@ class LandUseViolation:
             )
 
         id = self.id
-        new_number = self.number if self.number != other.number else ""
-        new_year = self.year if self.year != other.year else ""
-        new_month = self.month if self.month != other.month else ""
-        new_city = self.city if self.city != other.city else ""
-        new_sectname = self.sectname if self.sectname != other.sectname else ""
-        new_sectcode = self.sectcode if self.sectcode != other.sectcode else ""
-        new_usage_zone = self.usage_zone if self.usage_zone != other.usage_zone else ""
-        new_use = self.use if self.use != other.use else ""
-        new_status = list(set(self.status) - set(other.status))
+        new_number = other.number if self.number != other.number else ""
+        new_year = other.year if self.year != other.year else ""
+        new_month = other.month if self.month != other.month else ""
+        new_city = other.city if self.city != other.city else ""
+        new_sectname = other.sectname if self.sectname != other.sectname else ""
+        new_sectcode = other.sectcode if self.sectcode != other.sectcode else ""
+        new_land_numbers = list(set(other.land_numbers) - set(self.land_numbers))
+        new_usage_zone = other.usage_zone if self.usage_zone != other.usage_zone else ""
+        new_use = other.use if self.use != other.use else ""
+        new_status = list(set(other.status) - set(self.status))
 
         return LandUseViolation(
             id,
@@ -91,6 +95,7 @@ class LandUseViolation:
             new_city,
             new_sectname,
             new_sectcode,
+            new_land_numbers,
             new_usage_zone,
             new_use,
             new_status,
@@ -105,6 +110,7 @@ class LandUseViolation:
             "city": self.city,
             "sectname": self.sectname,
             "sectcode": self.sectcode,
+            "land_numbers": self.land_numbers,
             "usage_zone": self.usage_zone,
             "use": self.use,
             "status": self.status,
@@ -148,7 +154,7 @@ def row_to_model(row: pd.Series) -> LandUseViolation:
     status = status_str.split() if status_str != "" else []
 
     return LandUseViolation(
-        id, "", "", number, city, sectname, "", usage_zone, use, status
+        id, "", "", number, city, sectname, "", [], usage_zone, use, status
     )
 
 
@@ -183,13 +189,16 @@ class Parser:
                 violation.year = year
                 violation.month = month
 
+                # If the violation is already in the violation_dict, diff it and add to update_list
                 if violation.sectname in self.violation_dict:
                     violation.id = self.violation_dict[violation.sectname].id
                     diff = self.violation_dict[violation.sectname].diff(violation)
                     self.update_list.append(diff)
                 else:
                     violation.id = id_generator.generate_id()
-                    print(self.converter.convert(violation.sectname))
+                    code = self.converter.convert(violation.sectname)
+                    violation.sectcode = code.sect_code
+                    violation.land_numbers = code.land_numbers
                     self.violation_dict[violation.sectname] = violation
                     self.update_list.append(violation)
 

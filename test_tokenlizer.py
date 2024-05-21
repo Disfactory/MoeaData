@@ -9,7 +9,8 @@ if __name__ == "__main__":
 
     # address = "雲林縣口湖鄉梧北段二五四之四十三、二五四之四十六地號"
     # address = "朴子市母寮段竹村小段581地號"
-    address = "烏日區北里段277地號"
+    # address = "烏日區北里段277地號"
+    address = "安定區港口段1780地號(1680地號西側建物)"
     address = n.execute(address)
     print(address)
     address = parser.execute(address)

@@ -1,7 +1,5 @@
 import re
 
-from . import data
-
 
 class Token:
     value: str
@@ -77,7 +75,7 @@ class Tokenlizer:
             return ""
 
         def replace_land_token(m: re.Match):
-            if m.groups():
+            if m.groups() and address_token.land.value == "":
                 address_token.land.value = m.group("value")
                 address_token.land.unit = m.group("unit")
             return ""

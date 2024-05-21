@@ -5,6 +5,7 @@ TO_REPLACE_MAP = {
     "之": "-",
     "–": "-",
     "—": "-",
+    ".": "、",
     "台": "臺",
     "１": "1",
     "２": "2",
@@ -47,7 +48,7 @@ class Normalizer:
 
         self.no_hyphen_replace_re = re.compile(
             """
-            [之–—]
+            [之–—.]
         """,
             re.X,
         )
